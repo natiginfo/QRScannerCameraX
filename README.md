@@ -1,2 +1,1 @@
 # QRScannerCameraX
-In 
