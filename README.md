@@ -1,0 +1,2 @@
+# QRScannerCameraX
+In 
