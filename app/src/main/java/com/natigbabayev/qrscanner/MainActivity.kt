@@ -6,8 +6,12 @@ import android.os.Bundle
 import android.view.TextureView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.camera.core.CameraX
+import androidx.camera.core.Preview
+import androidx.camera.core.PreviewConfig
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.LifecycleOwner
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,7 +36,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startCamera() {
-        // We will implement this in next steps.
+        val previewConfig = PreviewConfig.Builder()
+            // We want to show input from back camera of the device
+            .setLensFacing(CameraX.LensFacing.BACK)
+            .build()
+
+        val preview = Preview(previewConfig)
+
+        preview.setOnPreviewOutputUpdateListener { previewOutput ->
+            textureView.surfaceTexture = previewOutput.surfaceTexture
+        }
+
+        CameraX.bindToLifecycle(this as LifecycleOwner, preview)
     }
 
     private fun isCameraPermissionGranted(): Boolean {
