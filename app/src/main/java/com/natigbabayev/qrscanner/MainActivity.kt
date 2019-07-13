@@ -3,12 +3,11 @@ package com.natigbabayev.qrscanner
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.TextureView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.camera.core.CameraX
-import androidx.camera.core.Preview
-import androidx.camera.core.PreviewConfig
+import androidx.camera.core.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
@@ -47,7 +46,20 @@ class MainActivity : AppCompatActivity() {
             textureView.surfaceTexture = previewOutput.surfaceTexture
         }
 
-        CameraX.bindToLifecycle(this as LifecycleOwner, preview)
+        val imageAnalysisConfig = ImageAnalysisConfig.Builder()
+            .build()
+        val imageAnalysis = ImageAnalysis(imageAnalysisConfig)
+
+        val qrCodeAnalyzer = QrCodeAnalyzer { qrCodes ->
+            qrCodes.forEach {
+                Log.d("MainActivity", "QR Code detected: ${it.rawValue}.")
+            }
+        }
+
+        imageAnalysis.analyzer = qrCodeAnalyzer
+
+        // We need to bind preview and imageAnalysis use cases
+        CameraX.bindToLifecycle(this as LifecycleOwner, preview, imageAnalysis)
     }
 
     private fun isCameraPermissionGranted(): Boolean {
