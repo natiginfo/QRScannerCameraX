@@ -43,7 +43,10 @@ class MainActivity : AppCompatActivity() {
         val preview = Preview(previewConfig)
 
         preview.setOnPreviewOutputUpdateListener { previewOutput ->
-            textureView.surfaceTexture = previewOutput.surfaceTexture
+            val parent= textureView.parent as ViewGroup
+            parent.removeView(textureView)
+            textureView.surfaceTexture= it.surfaceTexture
+            parent.addView(textureView,0)
         }
 
         val imageAnalysisConfig = ImageAnalysisConfig.Builder()
