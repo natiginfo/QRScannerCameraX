@@ -5,9 +5,14 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.TextureView
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.camera.core.*
+import androidx.camera.core.CameraX
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageAnalysisConfig
+import androidx.camera.core.Preview
+import androidx.camera.core.PreviewConfig
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
@@ -43,10 +48,10 @@ class MainActivity : AppCompatActivity() {
         val preview = Preview(previewConfig)
 
         preview.setOnPreviewOutputUpdateListener { previewOutput ->
-            val parent= textureView.parent as ViewGroup
+            val parent = textureView.parent as ViewGroup
             parent.removeView(textureView)
-            textureView.surfaceTexture= it.surfaceTexture
-            parent.addView(textureView,0)
+            textureView.surfaceTexture = previewOutput.surfaceTexture
+            parent.addView(textureView, 0)
         }
 
         val imageAnalysisConfig = ImageAnalysisConfig.Builder()
@@ -66,11 +71,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun isCameraPermissionGranted(): Boolean {
-        val selfPermission = ContextCompat.checkSelfPermission(baseContext, Manifest.permission.CAMERA)
+        val selfPermission =
+            ContextCompat.checkSelfPermission(baseContext, Manifest.permission.CAMERA)
         return selfPermission == PackageManager.PERMISSION_GRANTED
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         if (requestCode == REQUEST_CAMERA_PERMISSION) {
             if (isCameraPermissionGranted()) {
                 textureView.post { startCamera() }
